@@ -36,5 +36,6 @@ export interface GameState {
   heldDice: boolean[];
   rollsLeft: number;
   scoreCard: ScoreCard;
+  yahtzeeBonus: number;
   gameOver: boolean;
 }

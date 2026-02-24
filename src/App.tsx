@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { GameState, ScoreCategory, DieValue } from './types';
-import { rollDice, calculateScore, isGameOver } from './gameLogic';
+import { rollDice, calculateScore, isGameOver, isYahtzee } from './gameLogic';
 import { Die } from './components/Die';
 import { ScoreCard } from './components/ScoreCard';
 
@@ -24,6 +24,7 @@ function App() {
       yahtzee: null,
       chance: null,
     },
+    yahtzeeBonus: 0,
     gameOver: false,
   });
 
@@ -59,6 +60,15 @@ function App() {
       [category]: score,
     };
 
+    // Check for Yahtzee bonus
+    let newYahtzeeBonus = gameState.yahtzeeBonus;
+    const rolledYahtzee = isYahtzee(gameState.dice);
+    const yahtzeeBoxFilled = gameState.scoreCard.yahtzee === 50;
+    
+    if (rolledYahtzee && yahtzeeBoxFilled) {
+      newYahtzeeBonus += 1;
+    }
+
     const gameOver = isGameOver(newScoreCard);
 
     setGameState({
@@ -66,6 +76,7 @@ function App() {
       heldDice: [false, false, false, false, false],
       rollsLeft: 3,
       scoreCard: newScoreCard,
+      yahtzeeBonus: newYahtzeeBonus,
       gameOver,
     });
   };
@@ -90,6 +101,7 @@ function App() {
         yahtzee: null,
         chance: null,
       },
+      yahtzeeBonus: 0,
       gameOver: false,
     });
   };
@@ -100,13 +112,12 @@ function App() {
 
   const heldDiceData = gameState.dice
     .map((die, idx) => ({ die, idx }))
-    .filter(({ idx }) => gameState.heldDice[idx]);
+    .filter(({ idx }) => gameState.heldDice[idx])
+    .sort((a, b) => a.die - b.die);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-700 to-green-800 py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-5xl font-bold text-center mb-8 text-gray-800">Yahtzee</h1>
-
         {gameState.gameOver && (
           <div className="bg-green-100 border-2 border-green-500 rounded-lg p-6 mb-6 text-center">
             <h2 className="text-3xl font-bold text-green-800 mb-2">Game Over!</h2>
@@ -132,14 +143,14 @@ function App() {
                 {!gameState.gameOver && (
                   <button
                     onClick={handleNewGame}
-                    className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
                   >
-                    Restart Game
+                    New Game
                   </button>
                 )}
               </div>
 
-              <div className="mb-6">
+              <div>
                 <h3 className="text-lg font-semibold mb-3 text-gray-700">
                   Held Dice {heldDiceData.length > 0 && `(${heldDiceData.length})`}
                 </h3>
@@ -157,12 +168,20 @@ function App() {
                     </div>
                   ) : (
                     <p className="text-center text-gray-400 italic">
-                      Click dice below to hold them here
+                      Click dice to hold them here
                     </p>
                   )}
                 </div>
               </div>
 
+              {gameState.rollsLeft < 3 && (
+                <p className="mt-4 text-sm text-gray-600 text-center">
+                  Click dice to hold/release them between rolls
+                </p>
+              )}
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
               <div>
                 <h3 className="text-lg font-semibold mb-3 text-gray-700">
                   Active Dice {activeDice.length > 0 && `(${activeDice.length})`}
@@ -186,12 +205,6 @@ function App() {
                   )}
                 </div>
               </div>
-
-              {gameState.rollsLeft < 3 && (
-                <p className="mt-4 text-sm text-gray-600 text-center">
-                  Click dice to hold/release them between rolls
-                </p>
-              )}
             </div>
 
             <button
@@ -213,6 +226,7 @@ function App() {
               dice={gameState.dice}
               onScoreSelect={handleScoreSelect}
               rollsLeft={gameState.rollsLeft}
+              yahtzeeBonus={gameState.yahtzeeBonus}
             />
           </div>
         </div>

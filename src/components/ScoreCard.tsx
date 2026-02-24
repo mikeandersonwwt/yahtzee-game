@@ -6,9 +6,10 @@ interface ScoreCardProps {
   dice: DieValue[];
   onScoreSelect: (category: ScoreCategory) => void;
   rollsLeft: number;
+  yahtzeeBonus: number;
 }
 
-export function ScoreCard({ scoreCard, dice, onScoreSelect, rollsLeft }: ScoreCardProps) {
+export function ScoreCard({ scoreCard, dice, onScoreSelect, rollsLeft, yahtzeeBonus }: ScoreCardProps) {
   const upperCategories: ScoreCategory[] = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
   const lowerCategories: ScoreCategory[] = [
     'threeOfAKind',
@@ -57,7 +58,7 @@ export function ScoreCard({ scoreCard, dice, onScoreSelect, rollsLeft }: ScoreCa
 
   const upperTotal = calculateUpperSectionTotal(scoreCard);
   const upperBonus = calculateUpperBonus(scoreCard);
-  const totalScore = calculateTotalScore(scoreCard);
+  const totalScore = calculateTotalScore(scoreCard, yahtzeeBonus);
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
@@ -99,6 +100,14 @@ export function ScoreCard({ scoreCard, dice, onScoreSelect, rollsLeft }: ScoreCa
           </thead>
           <tbody>{lowerCategories.map(renderScoreRow)}</tbody>
         </table>
+        {yahtzeeBonus > 0 && (
+          <div className="mt-2 px-4 py-2 bg-yellow-100 rounded">
+            <div className="flex justify-between">
+              <span className="font-medium">Yahtzee Bonus (×{yahtzeeBonus}):</span>
+              <span className="font-bold text-yellow-700">{yahtzeeBonus * 100}</span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="mt-4 px-4 py-3 bg-blue-100 rounded-lg">

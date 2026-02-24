@@ -21,7 +21,7 @@ export function Die({ value, isHeld, onClick }: DieProps) {
       onClick={onClick}
       className={`w-16 h-16 rounded-lg border-2 transition-all duration-200 hover:scale-105 ${
         isHeld
-          ? 'bg-blue-500 border-blue-600 shadow-lg'
+          ? 'bg-white border-gray-400 shadow-lg'
           : 'bg-white border-gray-300 shadow-md hover:border-gray-400'
       }`}
     >
@@ -34,7 +34,7 @@ export function Die({ value, isHeld, onClick }: DieProps) {
             <div
               key={idx}
               className={`rounded-full ${
-                hasDot ? (isHeld ? 'bg-white' : 'bg-gray-800') : 'bg-transparent'
+                hasDot ? 'bg-gray-800' : 'bg-transparent'
               }`}
             />
           );

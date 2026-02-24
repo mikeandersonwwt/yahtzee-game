@@ -20,6 +20,12 @@ function sumDice(dice: DieValue[]): number {
   return dice.reduce((sum, die) => sum + die, 0);
 }
 
+export function isYahtzee(dice: DieValue[]): boolean {
+  const counts = countDice(dice);
+  const countsArray = Array.from(counts.values());
+  return countsArray.includes(5);
+}
+
 export function calculateScore(dice: DieValue[], category: ScoreCategory): number {
   const counts = countDice(dice);
   const countsArray = Array.from(counts.values());
@@ -82,11 +88,11 @@ export function calculateUpperBonus(scoreCard: ScoreCard): number {
   return calculateUpperSectionTotal(scoreCard) >= 63 ? 35 : 0;
 }
 
-export function calculateTotalScore(scoreCard: ScoreCard): number {
+export function calculateTotalScore(scoreCard: ScoreCard, yahtzeeBonus: number = 0): number {
   const allScores = Object.values(scoreCard).reduce((total, score) => {
     return total + (score || 0);
   }, 0);
-  return allScores + calculateUpperBonus(scoreCard);
+  return allScores + calculateUpperBonus(scoreCard) + (yahtzeeBonus * 100);
 }
 
 export function isGameOver(scoreCard: ScoreCard): boolean {
