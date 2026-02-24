@@ -1,35 +1,115 @@
-import { useState } from 'react';
-import type { GameState, ScoreCategory, DieValue } from './types';
+import { useState, useEffect } from 'react';
+import type { GameState, ScoreCategory, DieValue, GameMode, PlayerType } from './types';
 import { rollDice, calculateScore, isGameOver, isYahtzee } from './gameLogic';
+import { computerDecideHold, computerSelectCategory } from './computerAI';
 import { Die } from './components/Die';
 import { ScoreCard } from './components/ScoreCard';
 
+const emptyScoreCard = {
+  ones: null,
+  twos: null,
+  threes: null,
+  fours: null,
+  fives: null,
+  sixes: null,
+  threeOfAKind: null,
+  fourOfAKind: null,
+  fullHouse: null,
+  smallStraight: null,
+  largeStraight: null,
+  yahtzee: null,
+  chance: null,
+};
+
 function App() {
+  const [gameMode, setGameMode] = useState<GameMode | null>(null);
   const [gameState, setGameState] = useState<GameState>({
+    mode: 'single',
     dice: [1, 1, 1, 1, 1],
     heldDice: [false, false, false, false, false],
     rollsLeft: 3,
-    scoreCard: {
-      ones: null,
-      twos: null,
-      threes: null,
-      fours: null,
-      fives: null,
-      sixes: null,
-      threeOfAKind: null,
-      fourOfAKind: null,
-      fullHouse: null,
-      smallStraight: null,
-      largeStraight: null,
-      yahtzee: null,
-      chance: null,
+    currentPlayer: 'human',
+    players: {
+      human: {
+        scoreCard: { ...emptyScoreCard },
+        yahtzeeBonus: 0,
+      },
+      computer: {
+        scoreCard: { ...emptyScoreCard },
+        yahtzeeBonus: 0,
+      },
     },
-    yahtzeeBonus: 0,
     gameOver: false,
   });
 
+  const currentPlayerData = gameState.players[gameState.currentPlayer];
+
+  useEffect(() => {
+    if (gameState.mode === 'vsComputer' && gameState.currentPlayer === 'computer' && !gameState.gameOver) {
+      playComputerTurn();
+    }
+  }, [gameState.currentPlayer, gameState.rollsLeft]);
+
+  const playComputerTurn = async () => {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    if (gameState.rollsLeft === 3) {
+      handleRoll();
+    } else if (gameState.rollsLeft > 0) {
+      const heldDecision = computerDecideHold(gameState.dice, gameState.heldDice);
+      
+      // Show each dice selection individually with delays
+      const changes: number[] = [];
+      for (let i = 0; i < heldDecision.length; i++) {
+        if (heldDecision[i] !== gameState.heldDice[i]) {
+          changes.push(i);
+        }
+      }
+      
+      // Apply changes one at a time for visual feedback
+      let currentHeld = [...gameState.heldDice];
+      for (const idx of changes) {
+        currentHeld[idx] = heldDecision[idx];
+        setGameState(prev => ({
+          ...prev,
+          heldDice: [...currentHeld],
+        }));
+        await new Promise(resolve => setTimeout(resolve, 600));
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      handleRoll();
+    } else {
+      const category = computerSelectCategory(gameState.dice, currentPlayerData.scoreCard);
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      handleScoreSelect(category);
+    }
+  };
+
+  const handleModeSelect = (mode: GameMode) => {
+    setGameMode(mode);
+    setGameState({
+      mode,
+      dice: [1, 1, 1, 1, 1],
+      heldDice: [false, false, false, false, false],
+      rollsLeft: 3,
+      currentPlayer: 'human',
+      players: {
+        human: {
+          scoreCard: { ...emptyScoreCard },
+          yahtzeeBonus: 0,
+        },
+        computer: {
+          scoreCard: { ...emptyScoreCard },
+          yahtzeeBonus: 0,
+        },
+      },
+      gameOver: false,
+    });
+  };
+
   const handleRoll = () => {
-    if (gameState.rollsLeft > 0) {
+    if (gameState.rollsLeft > 0 && gameState.currentPlayer === 'human') {
       const newDice = gameState.dice.map((die, idx) =>
         gameState.heldDice[idx] ? die : rollDice(1)[0]
       ) as DieValue[];
@@ -39,11 +119,23 @@ function App() {
         dice: newDice,
         rollsLeft: gameState.rollsLeft - 1,
       });
+    } else if (gameState.rollsLeft > 0 && gameState.currentPlayer === 'computer') {
+      setGameState(prev => {
+        const newDice = prev.dice.map((die, idx) =>
+          prev.heldDice[idx] ? die : rollDice(1)[0]
+        ) as DieValue[];
+
+        return {
+          ...prev,
+          dice: newDice,
+          rollsLeft: prev.rollsLeft - 1,
+        };
+      });
     }
   };
 
   const handleDieClick = (index: number) => {
-    if (gameState.rollsLeft < 3) {
+    if (gameState.rollsLeft < 3 && gameState.currentPlayer === 'human') {
       const newHeldDice = [...gameState.heldDice];
       newHeldDice[index] = !newHeldDice[index];
       setGameState({
@@ -56,54 +148,47 @@ function App() {
   const handleScoreSelect = (category: ScoreCategory) => {
     const score = calculateScore(gameState.dice, category);
     const newScoreCard = {
-      ...gameState.scoreCard,
+      ...currentPlayerData.scoreCard,
       [category]: score,
     };
 
-    // Check for Yahtzee bonus
-    let newYahtzeeBonus = gameState.yahtzeeBonus;
+    let newYahtzeeBonus = currentPlayerData.yahtzeeBonus;
     const rolledYahtzee = isYahtzee(gameState.dice);
-    const yahtzeeBoxFilled = gameState.scoreCard.yahtzee === 50;
+    const yahtzeeBoxFilled = currentPlayerData.scoreCard.yahtzee === 50;
     
     if (rolledYahtzee && yahtzeeBoxFilled) {
       newYahtzeeBonus += 1;
     }
 
-    const gameOver = isGameOver(newScoreCard);
+    const updatedPlayers = {
+      ...gameState.players,
+      [gameState.currentPlayer]: {
+        scoreCard: newScoreCard,
+        yahtzeeBonus: newYahtzeeBonus,
+      },
+    };
+
+    const bothPlayersFinished = gameState.mode === 'vsComputer'
+      ? isGameOver(updatedPlayers.human.scoreCard) && isGameOver(updatedPlayers.computer.scoreCard)
+      : isGameOver(newScoreCard);
+
+    const nextPlayer: PlayerType = gameState.mode === 'vsComputer' && !bothPlayersFinished
+      ? (gameState.currentPlayer === 'human' ? 'computer' : 'human')
+      : gameState.currentPlayer;
 
     setGameState({
+      ...gameState,
       dice: rollDice(5),
       heldDice: [false, false, false, false, false],
       rollsLeft: 3,
-      scoreCard: newScoreCard,
-      yahtzeeBonus: newYahtzeeBonus,
-      gameOver,
+      currentPlayer: nextPlayer,
+      players: updatedPlayers,
+      gameOver: bothPlayersFinished,
     });
   };
 
   const handleNewGame = () => {
-    setGameState({
-      dice: [1, 1, 1, 1, 1],
-      heldDice: [false, false, false, false, false],
-      rollsLeft: 3,
-      scoreCard: {
-        ones: null,
-        twos: null,
-        threes: null,
-        fours: null,
-        fives: null,
-        sixes: null,
-        threeOfAKind: null,
-        fourOfAKind: null,
-        fullHouse: null,
-        smallStraight: null,
-        largeStraight: null,
-        yahtzee: null,
-        chance: null,
-      },
-      yahtzeeBonus: 0,
-      gameOver: false,
-    });
+    setGameMode(null);
   };
 
   const activeDice = gameState.dice
@@ -114,6 +199,30 @@ function App() {
     .map((die, idx) => ({ die, idx }))
     .filter(({ idx }) => gameState.heldDice[idx])
     .sort((a, b) => a.die - b.die);
+
+  if (gameMode === null) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-700 to-green-800 py-8 px-4 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-2xl p-12 max-w-md w-full">
+          <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Yahtzee</h1>
+          <div className="space-y-4">
+            <button
+              onClick={() => handleModeSelect('single')}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg transition-colors text-xl"
+            >
+              Single Player
+            </button>
+            <button
+              onClick={() => handleModeSelect('vsComputer')}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg transition-colors text-xl"
+            >
+              vs Computer
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-700 to-green-800 py-8 px-4">
@@ -150,6 +259,16 @@ function App() {
                 )}
               </div>
 
+              {gameState.mode === 'vsComputer' && (
+                <div className="mb-4 text-center">
+                  <p className="text-lg font-semibold text-gray-700">
+                    Current Turn: <span className={gameState.currentPlayer === 'human' ? 'text-blue-600' : 'text-purple-600'}>
+                      {gameState.currentPlayer === 'human' ? 'You' : 'Computer'}
+                    </span>
+                  </p>
+                </div>
+              )}
+
               <div>
                 <h3 className="text-lg font-semibold mb-3 text-gray-700">
                   Held Dice {heldDiceData.length > 0 && `(${heldDiceData.length})`}
@@ -162,19 +281,19 @@ function App() {
                           key={idx}
                           value={die}
                           isHeld={true}
-                          onClick={() => handleDieClick(idx)}
+                          onClick={() => gameState.currentPlayer === 'human' ? handleDieClick(idx) : undefined}
                         />
                       ))}
                     </div>
                   ) : (
                     <p className="text-center text-gray-400 italic">
-                      Click dice to hold them here
+                      {gameState.currentPlayer === 'human' ? 'Click dice to hold them here' : 'No dice held'}
                     </p>
                   )}
                 </div>
               </div>
 
-              {gameState.rollsLeft < 3 && (
+              {gameState.rollsLeft < 3 && gameState.currentPlayer === 'human' && (
                 <p className="mt-4 text-sm text-gray-600 text-center">
                   Click dice to hold/release them between rolls
                 </p>
@@ -194,7 +313,7 @@ function App() {
                           key={idx}
                           value={die}
                           isHeld={false}
-                          onClick={() => handleDieClick(idx)}
+                          onClick={() => gameState.currentPlayer === 'human' ? handleDieClick(idx) : undefined}
                         />
                       ))}
                     </div>
@@ -209,9 +328,9 @@ function App() {
 
             <button
               onClick={handleRoll}
-              disabled={gameState.rollsLeft === 0 || gameState.gameOver}
+              disabled={gameState.rollsLeft === 0 || gameState.gameOver || gameState.currentPlayer === 'computer'}
               className={`w-full font-bold py-3 px-6 rounded-lg transition-colors ${
-                gameState.rollsLeft === 0 || gameState.gameOver
+                gameState.rollsLeft === 0 || gameState.gameOver || gameState.currentPlayer === 'computer'
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700 text-white'
               }`}
@@ -222,11 +341,12 @@ function App() {
 
           <div>
             <ScoreCard
-              scoreCard={gameState.scoreCard}
+              mode={gameState.mode}
+              players={gameState.players}
               dice={gameState.dice}
               onScoreSelect={handleScoreSelect}
               rollsLeft={gameState.rollsLeft}
-              yahtzeeBonus={gameState.yahtzeeBonus}
+              currentPlayer={gameState.currentPlayer}
             />
           </div>
         </div>

@@ -31,11 +31,24 @@ export interface ScoreCard {
   chance: number | null;
 }
 
+export type GameMode = 'single' | 'vsComputer';
+
+export type PlayerType = 'human' | 'computer';
+
+export interface PlayerData {
+  scoreCard: ScoreCard;
+  yahtzeeBonus: number;
+}
+
 export interface GameState {
+  mode: GameMode;
   dice: DieValue[];
   heldDice: boolean[];
   rollsLeft: number;
-  scoreCard: ScoreCard;
-  yahtzeeBonus: number;
+  currentPlayer: PlayerType;
+  players: {
+    human: PlayerData;
+    computer: PlayerData;
+  };
   gameOver: boolean;
 }
