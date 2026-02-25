@@ -4,6 +4,7 @@ import { rollDice, calculateScore, isGameOver, isYahtzee } from './gameLogic';
 import { computerDecideHold, computerSelectCategory } from './computerAI';
 import { Die } from './components/Die';
 import { ScoreCard } from './components/ScoreCard';
+import { HowToPlayModal } from './components/HowToPlayModal';
 
 const emptyScoreCard = {
   ones: null,
@@ -23,6 +24,7 @@ const emptyScoreCard = {
 
 function App() {
   const [gameMode, setGameMode] = useState<GameMode | null>(null);
+  const [isHowToPlayOpen, setIsHowToPlayOpen] = useState(false);
   const [gameState, setGameState] = useState<GameState>({
     mode: 'single',
     dice: [1, 1, 1, 1, 1],
@@ -347,10 +349,16 @@ function App() {
               onScoreSelect={handleScoreSelect}
               rollsLeft={gameState.rollsLeft}
               currentPlayer={gameState.currentPlayer}
+              onHowToPlayClick={() => setIsHowToPlayOpen(true)}
             />
           </div>
         </div>
       </div>
+
+      <HowToPlayModal 
+        isOpen={isHowToPlayOpen} 
+        onClose={() => setIsHowToPlayOpen(false)} 
+      />
     </div>
   );
 }

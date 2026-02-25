@@ -11,9 +11,10 @@ interface ScoreCardProps {
   onScoreSelect: (category: ScoreCategory) => void;
   rollsLeft: number;
   currentPlayer: PlayerType;
+  onHowToPlayClick: () => void;
 }
 
-export function ScoreCard({ mode, players, dice, onScoreSelect, rollsLeft, currentPlayer }: ScoreCardProps) {
+export function ScoreCard({ mode, players, dice, onScoreSelect, rollsLeft, currentPlayer, onHowToPlayClick }: ScoreCardProps) {
   const upperCategories: ScoreCategory[] = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
   const lowerCategories: ScoreCategory[] = [
     'threeOfAKind',
@@ -70,7 +71,16 @@ export function ScoreCard({ mode, players, dice, onScoreSelect, rollsLeft, curre
 
     return (
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold mb-4 text-center">Score Card</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-center flex-1">Score Card</h2>
+          <button
+            onClick={onHowToPlayClick}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold w-8 h-8 rounded-full shadow-md transition-colors flex items-center justify-center text-lg"
+            aria-label="How to Play"
+          >
+            ?
+          </button>
+        </div>
 
         <div className="mb-6">
           <h3 className="text-lg font-semibold mb-2 text-gray-700">Upper Section</h3>
@@ -202,7 +212,16 @@ export function ScoreCard({ mode, players, dice, onScoreSelect, rollsLeft, curre
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h2 className="text-2xl font-bold mb-4 text-center">Score Card</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-center flex-1">Score Card</h2>
+        <button
+          onClick={onHowToPlayClick}
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold w-8 h-8 rounded-full shadow-md transition-colors flex items-center justify-center text-lg"
+          aria-label="How to Play"
+        >
+          ?
+        </button>
+      </div>
 
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-2 text-gray-700">Upper Section</h3>
