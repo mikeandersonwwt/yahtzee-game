@@ -1,4 +1,4 @@
-import type { DieValue, ScoreCard as ScoreCardType, ScoreCategory, GameMode, PlayerType, PlayerData } from '../types';
+import type { DieValue, ScoreCategory, GameMode, PlayerType, PlayerData } from '../types';
 import { calculateScore, CATEGORY_LABELS, calculateUpperSectionTotal, calculateUpperBonus, calculateTotalScore } from '../gameLogic';
 
 interface ScoreCardProps {
