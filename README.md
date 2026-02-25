@@ -1,61 +1,75 @@
 # Yahtzee Game 🎲
 
-Yahtzee is a classic dice game where players roll five dice up to three times per turn, trying to achieve specific scoring combinations. 
+A modern, web-based implementation of the classic Yahtzee dice game, built with React, TypeScript, and Vite. This project showcases full-stack development skills, AI opponent implementation, and automated CI/CD deployment using GitHub Actions.
 
-This is a web-based implementation of Yahtzee with both single-player and vs computer modes, built to run locally in your browser. The game features an intuitive click-to-hold dice mechanism, real-time score previews, an AI opponent, and a clean, responsive interface.
+**[Play the Game Live](https://mikeandersonwwt.github.io/yahtzee-game/)**
+
+## Project Overview
+
+This Yahtzee game is a fully functional web application that demonstrates:
+
+- **Modern React Development**: Built with React 19, TypeScript, and Vite for optimal performance
+- **Responsive UI/UX**: Clean, intuitive interface styled with Tailwind CSS
+- **Game AI**: Strategic computer opponent that makes intelligent decisions
+- **State Management**: Complex game state handling with React hooks
+- **Automated Deployment**: CI/CD pipeline using GitHub Actions for seamless deployment to GitHub Pages
+
+## Features
 
 ### Game Modes
-
 - **Single Player**: Play solo and try to achieve the highest score possible
-- **Vs Computer**: Compete against an AI opponent that makes strategic decisions
+- **Vs Computer**: Compete against an AI opponent that makes strategic decisions based on probability and game state
 
-### How to Play
+### Interactive Gameplay
+- **Click-to-Hold Dice**: Intuitive dice holding mechanism - click to hold, click again to release
+- **Real-Time Score Preview**: See potential scores for each category before committing
+- **In-Game Instructions**: Built-in "How to Play" modal with complete game rules and scoring information
+- **Visual Feedback**: Clear indicators for held dice, available categories, and current player turn
 
-1. **Select Mode**: Choose between Single Player or Vs Computer at the start
-2. **Roll the Dice**: Click the "Roll Dice" button to roll all five dice (you get 3 rolls per turn)
-3. **Hold Dice**: After rolling, click any die to hold it - held dice move to the blue "Held Dice" area and won't be re-rolled
-4. **Release Dice**: Click a held die to release it back to the "Active Dice" area
-5. **Score**: After using at least one roll, click a category in the scorecard to lock in your score
-6. **Repeat**: Continue for all 13 categories to complete the game
-7. **Winner**: In Vs Computer mode, the player with the highest total score wins
+### Technical Highlights
 
-### Scoring Categories
+#### AI Implementation
+The computer opponent uses a strategic decision-making algorithm that:
+- Evaluates all possible scoring combinations
+- Prioritizes high-value categories (Yahtzee, Large Straight, Full House)
+- Makes intelligent dice-holding decisions based on probability
+- Adapts strategy based on remaining categories
 
-**Upper Section** (score = sum of matching dice)
-- **Ones**: Sum of all 1s
-- **Twos**: Sum of all 2s
-- **Threes**: Sum of all 3s
-- **Fours**: Sum of all 4s
-- **Fives**: Sum of all 5s
-- **Sixes**: Sum of all 6s
-- **Bonus**: 35 points if upper section totals 63 or more
+#### Automated Deployment
+This project uses GitHub Actions for continuous deployment:
+- **Automated Build**: TypeScript compilation and Vite bundling on every push to main
+- **GitHub Pages Deployment**: Automatic deployment to live site
+- **Clean Install Strategy**: Handles npm dependency issues with fresh installs
+- **Manual Trigger Option**: Workflow can also be triggered manually from GitHub Actions tab
 
-**Lower Section**
-- **Three of a Kind**: At least 3 dice showing the same value (score = sum of all dice)
-- **Four of a Kind**: At least 4 dice showing the same value (score = sum of all dice)
-- **Full House**: 3 of one value and 2 of another (25 points)
-- **Small Straight**: 4 sequential dice (30 points)
-- **Large Straight**: 5 sequential dice (40 points)
-- **Yahtzee**: All 5 dice showing the same value (50 points)
-- **Chance**: Any combination (score = sum of all dice)
+The deployment workflow includes:
+- Node.js 20 environment setup
+- Clean dependency installation to avoid optional dependency issues
+- Production build optimization
+- Automated artifact upload and deployment to GitHub Pages
 
-### Game Rules
+## Technology Stack
 
-- Each category can only be used once per game
-- You must fill one category each turn, even if it scores 0 points
-- The game ends after all 13 categories are filled
-- Your final score includes the upper section bonus if earned
+- **Frontend Framework**: React 19 with TypeScript
+- **Build Tool**: Vite 7
+- **Styling**: Tailwind CSS 4
+- **Deployment**: GitHub Pages via GitHub Actions
+- **Development**: ESLint for code quality
 
-## How to Run
+## How to Run Locally
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js (v20 or higher)
 - npm (comes with Node.js)
 
 ### Installation & Setup
 
-1. **Clone or download this project**
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/mikeandersonwwt/yahtzee-game.git
+   cd yahtzee-game
+   ```
 
 2. **Install dependencies**
    ```bash
@@ -78,16 +92,11 @@ This is a web-based implementation of Yahtzee with both single-player and vs com
    pkill -f "vite"
    ```
 
-
-## Enjoy the Game!
-
-Roll the dice, strategize your scoring, and try to beat your high score! 🎲
-
+## Screenshots
 
 ![Yahtzee Game Screenshot 1](yahtzee1.png)
 
 ![Yahtzee Game Screenshot 2](yahtzee2.png)
-
 
 ## Acknowledgments
 

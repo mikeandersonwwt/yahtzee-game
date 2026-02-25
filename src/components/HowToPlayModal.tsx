@@ -28,25 +28,16 @@ export function HowToPlayModal({ isOpen, onClose }: HowToPlayModalProps) {
 
           <div className="px-6 py-4 space-y-6">
             <section>
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">Game Rules</h3>
-              <ul className="space-y-2 text-gray-700">
-                <li className="flex items-start">
-                  <span className="text-blue-600 font-bold mr-2">•</span>
-                  <span>Each category can only be used once per game</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-blue-600 font-bold mr-2">•</span>
-                  <span>You must fill one category each turn, even if it scores 0 points</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-blue-600 font-bold mr-2">•</span>
-                  <span>The game ends after all 13 categories are filled</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-blue-600 font-bold mr-2">•</span>
-                  <span>Your final score includes the upper section bonus if earned</span>
-                </li>
-              </ul>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">How to Play</h3>
+              <ol className="space-y-2 text-gray-700 list-decimal list-inside">
+                <li><span className="font-semibold">Select Mode:</span> Choose between Single Player or Vs Computer at the start</li>
+                <li><span className="font-semibold">Roll the Dice:</span> Click the "Roll Dice" button to roll all five dice (you get 3 rolls per turn)</li>
+                <li><span className="font-semibold">Hold Dice:</span> After rolling, click any die to hold it - held dice move to the blue "Held Dice" area and won't be re-rolled</li>
+                <li><span className="font-semibold">Release Dice:</span> Click a held die to release it back to the "Active Dice" area</li>
+                <li><span className="font-semibold">Score:</span> After using at least one roll, click a category in the scorecard to lock in your score</li>
+                <li><span className="font-semibold">Repeat:</span> Continue for all 13 categories to complete the game</li>
+                <li><span className="font-semibold">Winner:</span> In Vs Computer mode, the player with the highest total score wins</li>
+              </ol>
             </section>
 
             <section>
@@ -128,6 +119,28 @@ export function HowToPlayModal({ isOpen, onClose }: HowToPlayModalProps) {
                   </p>
                 </div>
               </div>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">Game Rules</h3>
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-2">•</span>
+                  <span>Each category can only be used once per game</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-2">•</span>
+                  <span>You must fill one category each turn, even if it scores 0 points</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-2">•</span>
+                  <span>The game ends after all 13 categories are filled</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-2">•</span>
+                  <span>Your final score includes the upper section bonus if earned</span>
+                </li>
+              </ul>
             </section>
           </div>
 
