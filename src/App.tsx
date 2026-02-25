@@ -205,6 +205,16 @@ function App() {
   if (gameMode === null) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-700 to-green-800 py-8 px-4 flex items-center justify-center">
+        <div className="absolute top-4 left-4">
+          <a
+            href="https://github.com/mikeandersonwwt/yahtzee-game"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-black hover:text-gray-700 text-sm underline transition-colors"
+          >
+            View Repo
+          </a>
+        </div>
         <div className="bg-white rounded-lg shadow-2xl p-12 max-w-md w-full">
           <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Yahtzee</h1>
           <div className="space-y-4">

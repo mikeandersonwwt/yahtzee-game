@@ -1,6 +1,6 @@
 # Yahtzee Game 🎲
 
-A modern, web-based implementation of the classic Yahtzee dice game, built with React, TypeScript, and Vite. This project showcases full-stack development skills, AI opponent implementation, and automated CI/CD deployment using GitHub Actions.
+A modern, web-based implementation of the classic Yahtzee dice game, built with React, TypeScript, and Vite. This project showcases frontend development skills, AI opponent implementation, and automated CI/CD deployment using GitHub Actions.
 
 **[Play the Game Live](https://mikeandersonwwt.github.io/yahtzee-game/)**
 
